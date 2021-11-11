@@ -214,11 +214,16 @@ class ServerWorker:
                 '\nSession: ' + str(self.clientInfo['session'])
             if describe:
                 reply += '\n\n'
-                reply += 'protocol=RTP\n'
-                reply += 'version=2\n'
-                reply += 'stream=video\n'
-                reply += 'type=mjpeg\n'
-                reply += f'Content-Base= {self.filename}\n'
+                reply += 'RTSP/1.0 200 OK\n'
+                reply += f'CSeq = {seq}\n'
+                reply += 'Session = '
+                reply += str(self.clientInfo['session'])
+                reply += '\n'
+                reply += 'protocol = RTP\n'
+                reply += 'version = 2\n'
+                reply += 'stream = video\n'
+                reply += 'type = Mjpeg\n'
+                reply += f'filename = {self.filename}\n'
 
             connSocket = self.clientInfo['rtspSocket'][0]
             connSocket.send(reply.encode())
