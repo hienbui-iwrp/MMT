@@ -160,13 +160,7 @@ class Client:
     def exitClient(self):
         """Teardown button handler."""
         self.sendRtspRequest(self.TEARDOWN)
-
-        # if self.frameNbr != 0:
-        #     lossRate = self.lossCounter / self.frameNbr
-        #     print("[*]RTP Packet Loss Rate: " + str(lossRate) + "\n")
-
-        self.master.destroy()  # Close the gui window
-        # Delete the cache image from video
+        self.master.destroy() 
         if self.cache:
             os.remove(CACHE_FILE_NAME + str(self.sessionId) + CACHE_FILE_EXT)
             self.cache = False
@@ -206,7 +200,6 @@ class Client:
 
     # next video
     def nextMovie(self):
-        # get next video
         NEXT = 1
 
         if self.cache:
@@ -216,11 +209,9 @@ class Client:
         self.sendRtspRequest(self.NEXT)
         self.teardownAcked = 0
         self.frameNbr = 0
-        # self.lossCounter = 0
 
     # back video
     def backMovie(self):
-        # get next video
         BACK = 0
 
         if self.cache:
@@ -230,7 +221,6 @@ class Client:
         self.sendRtspRequest(self.BACK)
         self.teardownAcked = 0
         self.frameNbr = 0
-        # self.lossCounter = 0
 
     def listenRtp(self):
         """Listen for RTP packets."""
@@ -241,17 +231,11 @@ class Client:
                     rtpPacket = RtpPacket()
                     rtpPacket.decode(data)
 
-                    # If sequence number doesn't match, we have a packet loss
-                    # if self.frameNbr + 1 != rtpPacket.seqNum():
-                    #     self.lossCounter += math.abs((rtpPacket.seqNum() -
-                    #                          (self.frameNbr + 1)))
-                    #     print("[*]Packet loss!")
 
                     currFrameNbr = rtpPacket.seqNum()
                     print("Current Seq Num: " + str(currFrameNbr))
 
-                    if currFrameNbr > self.frameNbr:  # Discard the late packet
-                        # Count the received bytes
+                    if currFrameNbr > self.frameNbr: 
                         self.bytesReceived += len(rtpPacket.getPayload())
 
                         self.frameNbr = currFrameNbr
@@ -263,12 +247,11 @@ class Client:
                         self.timeBox.configure(text="%02d:%02d" % (currentTime // 60, currentTime % 60))
 
             except:
-                # Stop listening upon requesting PAUSE or TEARDOWN
+                
                 if self.playEvent.isSet():
                     break
 
-                # Upon receiving ACK for TEARDOWN request,
-                # close the RTP socket
+
                 if self.requestSent == self.TEARDOWN:
                     self.rtpSocket.shutdown(socket.SHUT_RDWR)
                     break
@@ -443,12 +426,6 @@ class Client:
                 self.rtspSocket.close()
                 break
 
-            # if self.teardownAcked == 1:
-            #     os.remove(CACHE_FILE_NAME +
-            #               str(self.sessionId) + CACHE_FILE_EXT)
-            #     self.rtspSocket.shutdown(socket.SHUT_RDWR)
-            #     self.rtspSocket.close()
-            #     break
 
     def parseRtspReply(self, data):
         """Parse the RTSP reply from the server."""
@@ -570,13 +547,8 @@ class Client:
 
         # Set the timeout value of the socket to 0.5sec
         self.rtpSocket.settimeout(0.5)
+        self.rtpSocket.bind(("", self.rtpPort))
 
-        try:
-            # Bind the socket to the address using the RTP port given by the client user
-            self.rtpSocket.bind(("", self.rtpPort))
-        except:
-            tkinter.messagebox.showwarning(
-                'Unable to Bind', 'Unable to bind PORT=%d' % self.rtpPort)
 
     def handler(self):
         """Handler on explicitly closing the GUI window."""

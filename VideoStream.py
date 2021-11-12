@@ -17,7 +17,7 @@ class VideoStream:
         self.fast_backward = 1
 
     def nextFrame(self):
-        """ Fast forward """
+
         if self.fast_forward:
             prevData = None
             for i in range(3 * 20):
@@ -35,7 +35,6 @@ class VideoStream:
             self.fast_forward = 0
             return data
 
-        """ Fast backword"""
         if self.fast_backward:
             numFrame = 3 * 20
             if numFrame >= self.frameNum:
