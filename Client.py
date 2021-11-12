@@ -123,6 +123,7 @@ class Client:
         self.right = Button(self.master, width=30, padx=2, pady=2, bd=0)
         self.right['image'] = self.imageright
         self.right["command"] = self.fastForward
+        self.right["state"] = "disabled"
         self.right.grid(row=1, column=3, columnspan=1, padx=2, pady=2)
 
         # Create Backward button
@@ -130,6 +131,7 @@ class Client:
         self.left = Button(self.master, width=30, padx=2, pady=2, bd=0)
         self.left['image'] = self.imageleft
         self.left["command"] = self.fastBackward
+        self.left["state"] = "disabled"
         self.left.grid(row=1, column=0, columnspan=1, padx=2, pady=2)
 
         # Create nextVideo button
@@ -152,7 +154,7 @@ class Client:
             self.sendRtspRequest(self.SETUP)
 
         # set total time
-        self.totalTime = self.getDurationTime()
+        self.totalTime = self.totalTimeVideo()
         self.Totallabel.config(text=self.totalTime)
 
     def exitClient(self):
@@ -193,8 +195,8 @@ class Client:
             self.sendRtspRequest(self.FASTFORWARD)
 
     def fastBackward(self):
-        frame_back = 3 * 20
         if self.state == self.PLAYING:
+            frame_back = 3 * 20
             if self.frameNbr <= frame_back:
                 self.frameNbr = 0
             else:
@@ -497,6 +499,8 @@ class Client:
                         self.teardown["state"] = "normal"
                         self.next["state"] = "normal"
                         self.back["state"] = "normal"
+                        self.right["state"] = "normal"
+                        self.left["state"] = "normal"
 
                     elif self.requestSent == self.PAUSE:
                         # Update RTSP state.
@@ -518,7 +522,8 @@ class Client:
                         self.teardown["state"] = "normal"
                         self.next["state"] = "normal"
                         self.back["state"] = "normal"
-
+                        self.right["state"] = "disabled"
+                        self.left["state"] = "disabled"
                     elif self.requestSent == self.TEARDOWN:
                         # Update RTSP state.
                         self.state = self.INIT
@@ -581,7 +586,7 @@ class Client:
         else:  # When the user presses cancel, resume playing.
             self.playMovie()
 
-    def getDurationTime(self):
+    def totalTimeVideo(self):
         video = VideoStream(self.fileName)
         while video.nextFrame():
             pass

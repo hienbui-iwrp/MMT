@@ -6,7 +6,7 @@ class VideoStream:
         except:
             raise IOError
         self.frameNum = 0
-        self.frameList = []
+        self.frameLengthList = []
         self.fast_forward = 0
         self.fast_backward = 0
 
@@ -26,8 +26,8 @@ class VideoStream:
                     framelength = int(data)
                     data = self.file.read(framelength)
                     self.frameNum += 1
-                    if self.frameNum > len(self.frameList):
-                        self.frameList.append(framelength)
+                    if self.frameNum > len(self.frameLengthList):
+                        self.frameLengthList.append(framelength)
                     prevData = data
                 else:
                     self.fast_forward = 0
@@ -44,7 +44,7 @@ class VideoStream:
             else:
                 for i in range(numFrame):
                     self.frameNum -= 1
-                    self.file.seek(-5 - self.frameList[self.frameNum], 1)
+                    self.file.seek(-5 - self.frameLengthList[self.frameNum], 1)
 
             self.fast_backward = 0
 
@@ -54,8 +54,8 @@ class VideoStream:
             framelength = int(data)
             data = self.file.read(framelength)
             self.frameNum += 1
-            if self.frameNum >= len(self.frameList):
-                self.frameList.append(framelength)
+            if self.frameNum >= len(self.frameLengthList):
+                self.frameLengthList.append(framelength)
         return data
 
     def frameNbr(self):
