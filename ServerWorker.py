@@ -214,8 +214,6 @@ class ServerWorker:
                 '\nSession: ' + str(self.clientInfo['session'])
             if describe:
                 reply += '\n\n'
-                reply += 'RTSP/1.0 200 OK\n'
-                reply += f'CSeq = {seq}\n'
                 reply += 'Session = '
                 reply += str(self.clientInfo['session'])
                 reply += '\n'

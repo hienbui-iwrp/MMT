@@ -11,7 +11,7 @@ from VideoStream import VideoStream
 from RtpPacket import RtpPacket
 from datetime import timedelta
 import fnmatch
-
+import math
 
 from RtpPacket import RtpPacket
 
@@ -159,9 +159,9 @@ class Client:
         """Teardown button handler."""
         self.sendRtspRequest(self.TEARDOWN)
 
-        if self.frameNbr != 0:
-            lossRate = self.lossCounter / self.frameNbr
-            print("[*]RTP Packet Loss Rate: " + str(lossRate) + "\n")
+        # if self.frameNbr != 0:
+        #     lossRate = self.lossCounter / self.frameNbr
+        #     print("[*]RTP Packet Loss Rate: " + str(lossRate) + "\n")
 
         self.master.destroy()  # Close the gui window
         # Delete the cache image from video
@@ -193,12 +193,12 @@ class Client:
             self.sendRtspRequest(self.FASTFORWARD)
 
     def fastBackward(self):
-        frame_return = 3 * 20
+        frame_back = 3 * 20
         if self.state == self.PLAYING:
-            if self.frameNbr <= frame_return:
+            if self.frameNbr <= frame_back:
                 self.frameNbr = 0
             else:
-                self.frameNbr -= frame_return
+                self.frameNbr -= frame_back
 
             self.sendRtspRequest(self.BACKWARD)
 
@@ -214,6 +214,7 @@ class Client:
         self.sendRtspRequest(self.NEXT)
         self.teardownAcked = 0
         self.frameNbr = 0
+        # self.lossCounter = 0
 
     # back video
     def backMovie(self):
@@ -227,6 +228,7 @@ class Client:
         self.sendRtspRequest(self.BACK)
         self.teardownAcked = 0
         self.frameNbr = 0
+        # self.lossCounter = 0
 
     def listenRtp(self):
         """Listen for RTP packets."""
@@ -238,10 +240,10 @@ class Client:
                     rtpPacket.decode(data)
 
                     # If sequence number doesn't match, we have a packet loss
-                    if self.frameNbr + 1 != rtpPacket.seqNum():
-                        self.lossCounter += (rtpPacket.seqNum() -
-                                             (self.frameNbr + 1))
-                        print("[*]Packet loss!")
+                    # if self.frameNbr + 1 != rtpPacket.seqNum():
+                    #     self.lossCounter += math.abs((rtpPacket.seqNum() -
+                    #                          (self.frameNbr + 1)))
+                    #     print("[*]Packet loss!")
 
                     currFrameNbr = rtpPacket.seqNum()
                     print("Current Seq Num: " + str(currFrameNbr))
@@ -256,8 +258,7 @@ class Client:
 
                         # Show the current streaming time
                         currentTime = int(currFrameNbr * 0.05)
-                        self.timeBox.configure(text="%02d:%02d" % (
-                            currentTime // 60, currentTime % 60))
+                        self.timeBox.configure(text="%02d:%02d" % (currentTime // 60, currentTime % 60))
 
             except:
                 # Stop listening upon requesting PAUSE or TEARDOWN
@@ -507,8 +508,8 @@ class Client:
                         # Calculate the video data rate
                         dataRate = int(self.bytesReceived /
                                        (time.time() - self.startTime))
-                        print("[*]Video data rate: " +
-                              str(dataRate) + " bytes/sec\n")
+                        # print("[*]Video data rate: " +
+                        #       str(dataRate) + " bytes/sec\n")
 
                         # Update buttons' states
                         self.setup["state"] = "disabled"
@@ -588,10 +589,6 @@ class Client:
         seconds = totalFrame * 0.05
         video_time = str(timedelta(seconds=seconds))
         return video_time
-        # fps = 20 # Declare in ServerWorker.py sendRtp() function | fps = 1/0.05
-        # seconds = totalFrame / fps
-        # video_time = str(timedelta(seconds=seconds))
-        # return video_time
 
     # find next video
     def findMovie(self, status):

@@ -36,10 +36,10 @@ class RtpPacket:
         self.header[7] = timestamp & 0xFF
 
         # 4 byte of SSRC
-        self.header[8] = ssrc >> 24
-        self.header[9] = ssrc >> 16
-        self.header[10] = ssrc >> 8
-        self.header[11] = ssrc
+        self.header[8] = (ssrc >> 24) & 0xFF
+        self.header[9] = (ssrc >> 16) & 0xFF
+        self.header[10] = (ssrc >> 8) & 0xFF
+        self.header[11] = ssrc & 0xFF
         
         # Get the payload from the argument
         self.payload = payload

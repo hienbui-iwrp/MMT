@@ -1,6 +1,0 @@
-protocol=RTP
-version=2
-stream=video
-type=mjpeg
-Content-Base: .\movie.Mjpeg
-
